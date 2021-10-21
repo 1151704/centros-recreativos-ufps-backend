@@ -10,8 +10,8 @@ import java.io.Serializable;
  * The persistent class for the cru_departamento database table.
  * 
  */
-@Entity
-@Table(name = "cru_departamento")
+//@Entity
+//@Table(name = "cru_departamento")
 public class CruDepartamento implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -7,8 +7,8 @@ import java.io.Serializable;
  * The persistent class for the cru_municipio database table.
  * 
  */
-@Entity
-@Table(name = "cru_municipio")
+//@Entity
+//@Table(name = "cru_municipio")
 public class CruMunicipio implements Serializable {
 	private static final long serialVersionUID = 1L;
 
