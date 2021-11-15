@@ -2,7 +2,7 @@ package ufps.centrosrecreativos.api.mail;
 
 public interface EmailService {
 
-	public void sendMessageWithAttachment(String asunto, String mensaje);
+	public void sendMessage(String asunto, String destino, String mensaje);
 
 	public void sendMessageWithError(Exception error);
 

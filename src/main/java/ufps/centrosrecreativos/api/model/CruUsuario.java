@@ -40,6 +40,10 @@ public class CruUsuario implements Serializable {
 	@JsonIgnore
 	private String password;
 
+	@Column()
+	@JsonIgnore
+	private String passwordTemporal;
+
 	@Column(nullable = false)
 	private Boolean enable;
 
@@ -49,6 +53,11 @@ public class CruUsuario implements Serializable {
 	@Column(name = "fecha_registro", nullable = false)
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Bogota")
 	private Date fechaRegistro;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "fecha_restablecer")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "America/Bogota")
+	private Date fechaRestablecer;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "fecha_actualizacion")
@@ -178,4 +187,19 @@ public class CruUsuario implements Serializable {
 		this.auditor = auditor;
 	}
 
+	public String getPasswordTemporal() {
+		return passwordTemporal;
+	}
+
+	public void setPasswordTemporal(String passwordTemporal) {
+		this.passwordTemporal = passwordTemporal;
+	}
+
+	public Date getFechaRestablecer() {
+		return fechaRestablecer;
+	}
+
+	public void setFechaRestablecer(Date fechaRestablecer) {
+		this.fechaRestablecer = fechaRestablecer;
+	}
 }

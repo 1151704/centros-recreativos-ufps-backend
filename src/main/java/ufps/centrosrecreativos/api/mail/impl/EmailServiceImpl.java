@@ -1,19 +1,18 @@
-package ufps.centrosrecreativos.api.mail;
+package ufps.centrosrecreativos.api.mail.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import ufps.centrosrecreativos.api.mail.EmailService;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.Table;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -32,14 +31,14 @@ public class EmailServiceImpl implements EmailService {
 
 	@Async
 	@Override
-	public void sendMessageWithAttachment(String asunto, String mensaje) {
+	public void sendMessage(String asunto, String destino, String mensaje) {
 
 		MimeMessage message = emailSender.createMimeMessage();
 
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-			helper.setTo(notificacionesTo);
+			helper.setTo(destino);
 			helper.setSubject(asunto);
 			helper.setText(mensaje, true);
 

@@ -13,6 +13,7 @@ import ufps.centrosrecreativos.api.model.CruUsuario;
 import ufps.centrosrecreativos.api.service.CruUsuarioService;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,9 +45,23 @@ public class EpsAuthenticationManager implements AuthenticationManager {
 			if (!respuesta.getEnable()) {
 				throw new BadCredentialsException("Usuario inhabilitado");
 			}
+		} else {
+			throw new BadCredentialsException("Usuario no registrado");
 		}
+		boolean porRestablecer = false;
+		if (respuesta.getFechaRestablecer() != null) {
+			long diff = new Date().getTime() - respuesta.getFechaRestablecer().getTime();
+			long diferenciaHoras =  diff / (60 * 60 * 1000);
 
-		if (respuesta == null || !passwordEncoder.matches(password, respuesta.getPassword())) {
+			if (diferenciaHoras <= 24) {
+				if (passwordEncoder.matches(password, respuesta.getPasswordTemporal()) || passwordEncoder.matches(password, respuesta.getPassword())) {
+					porRestablecer = true;
+				} else {
+					throw new BadCredentialsException("Contraseña invalida");
+				}
+			}
+		}
+		if (!passwordEncoder.matches(password, respuesta.getPassword()) && !porRestablecer) {
 			throw new BadCredentialsException("Contraseña o nombre de usuario invalidos");
 		}
 

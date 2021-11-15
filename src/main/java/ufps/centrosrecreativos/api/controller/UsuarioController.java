@@ -1,17 +1,19 @@
 package ufps.centrosrecreativos.api.controller;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ufps.centrosrecreativos.api.container.UsuarioApi;
 import ufps.centrosrecreativos.api.container.UsuarioEntradaApi;
+import ufps.centrosrecreativos.api.container.UsuarioRestablecerApi;
 import ufps.centrosrecreativos.api.container.UsuariosApi;
+import ufps.centrosrecreativos.api.mail.EmailService;
 import ufps.centrosrecreativos.api.model.CruRol;
 import ufps.centrosrecreativos.api.model.CruUsuario;
 import ufps.centrosrecreativos.api.service.CruRolService;
@@ -19,10 +21,8 @@ import ufps.centrosrecreativos.api.service.CruTipoIdentificacionService;
 import ufps.centrosrecreativos.api.service.CruUsuarioService;
 import ufps.centrosrecreativos.api.util.ValidationException;
 
-import java.util.Calendar;
+import java.security.SecureRandom;
 import java.util.Date;
-import java.util.Map;
-import java.util.TimeZone;
 
 @RestController
 @RequestMapping("/api/usuario/")
@@ -39,6 +39,9 @@ public class UsuarioController {
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private EmailService sendMessage;
 
     @SuppressWarnings("unchecked")
     @Secured({ "ROLE_ADMIN" })
@@ -85,6 +88,8 @@ public class UsuarioController {
             if (passwordNew != null && passwordNew.trim().length() > 4) {
 
                 usuarioActual.setPassword(passwordEncoder.encode(passwordNew));
+                usuarioActual.setPasswordTemporal(null);
+                usuarioActual.setFechaRestablecer(null);
                 try {
                     service.save(usuarioActual);
                     hecho = true;
@@ -123,6 +128,45 @@ public class UsuarioController {
 
             } else {
                 throw new ValidationException("El estado no ha cambiado", HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            throw new ValidationException("Usuario inexistente", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @PostMapping("restablecer")
+    public ResponseEntity<Boolean> editEstado(@RequestBody(required = false) UsuarioRestablecerApi entrada) {
+
+        CruUsuario usuario = service.findByIdentificacion(entrada.getIdentificacion());
+
+        if (usuario != null) {
+
+            if (entrada.getCorreo() != null && entrada.getCorreo().equalsIgnoreCase(usuario.getEmail())) {
+                String temporal = RandomStringUtils.random(6, 97, 122, true, true, null, new SecureRandom());
+                String mensaje = "<p>Señor(a) <b>%s</b></p>\n" +
+                        "<p></p>\n" +
+                        "<p>Cordial saludo.</p>\n" +
+                        "\n" +
+                        "<p>Se le notifica que ha solicitado la recuperación de contraseña en <b>Centros Recreativos UFPS</b>.</p>\n" +
+                        "<p>Recuerde que esta contraseña tiene una vigencia de 24 horas. Despues de eso debe solicitar una nueva contraseña.</p>\n" +
+                        "<p>Por favor ingrese está contraseña temporal, para poder acceder al sistema.</p>\n" +
+                        "<p>Contraseña nueva: <b>%s</b></p>\n" +
+                        "\n" +
+                        "<p><em><b>Nota:</b> Este es un mensaje enviado automaticamente, por favor no responda, no se monitorea este correo.</em></p>\n" +
+                        "\n" +
+                        "<p>Muchas Gracias!</p>";
+
+                usuario.setPasswordTemporal(passwordEncoder.encode(temporal));
+                usuario.setFechaRestablecer(new Date());
+
+                service.save(usuario);
+
+                sendMessage.sendMessage("Recuperación de Contraseña", entrada.getCorreo(), String.format(mensaje, usuario.getNombres(), temporal));
+
+            } else {
+                throw new ValidationException("El correo no está vinculado con el usuario", HttpStatus.BAD_REQUEST);
             }
         } else {
             throw new ValidationException("Usuario inexistente", HttpStatus.BAD_REQUEST);
