@@ -49,7 +49,21 @@ public class CruCentroRecreativo implements Serializable {
 	@JoinColumn(name = "id_comuna", referencedColumnName = "id")
 	private CruComuna comunaId;
 
+	@Column(nullable = false)
+	private Boolean enable;
+
 	public CruCentroRecreativo() {
+	}
+
+	@PrePersist
+	private void prePersist(){
+		this.enable = true;
+		this.fechaRegistro = new Date();
+	}
+
+	@PreUpdate
+	private void preUpdate(){
+		this.fechaActualizacion = new Date();
 	}
 
 	public int getId() {
@@ -122,5 +136,13 @@ public class CruCentroRecreativo implements Serializable {
 
 	public void setComunaId(CruComuna comunaId) {
 		this.comunaId = comunaId;
+	}
+
+	public Boolean getEnable() {
+		return enable;
+	}
+
+	public void setEnable(Boolean enable) {
+		this.enable = enable;
 	}
 }

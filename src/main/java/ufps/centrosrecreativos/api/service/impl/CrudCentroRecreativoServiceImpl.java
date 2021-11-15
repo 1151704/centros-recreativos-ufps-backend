@@ -18,4 +18,19 @@ public class CrudCentroRecreativoServiceImpl implements CruCentroRecreativoServi
     public List<CruCentroRecreativo> findAll() {
         return (List<CruCentroRecreativo>) repository.findAll();
     }
+
+    @Override
+    public List<CruCentroRecreativo> findEnable() {
+        return repository.findByEnable(true);
+    }
+
+    @Override
+    public CruCentroRecreativo findById(Integer id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    @Override
+    public CruCentroRecreativo save(CruCentroRecreativo entity) {
+        return repository.save(entity);
+    }
 }

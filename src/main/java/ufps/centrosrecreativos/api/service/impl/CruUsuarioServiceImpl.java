@@ -2,13 +2,12 @@ package ufps.centrosrecreativos.api.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ufps.centrosrecreativos.api.model.CruRol;
 import ufps.centrosrecreativos.api.model.CruUsuario;
 import ufps.centrosrecreativos.api.repository.CruUsuarioRepository;
 import ufps.centrosrecreativos.api.service.CruUsuarioService;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -20,10 +19,17 @@ public class CruUsuarioServiceImpl implements CruUsuarioService {
 	@Override
 	public List<CruUsuario> findAll() {
 		try {
-			ArrayList<CruUsuario> usuarios = (ArrayList<CruUsuario>) repository.findAll();
-			Comparator<CruUsuario> compareById = (CruUsuario o1, CruUsuario o2) -> o1.getIdentificacion().compareTo( o2.getIdentificacion() );
-			Collections.sort(usuarios, compareById);
-			return usuarios;
+			return (ArrayList<CruUsuario>) repository.findAll();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public List<CruUsuario> findByRol(CruRol rol) {
+		try {
+			return repository.findByRol(rol);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,6 +65,15 @@ public class CruUsuarioServiceImpl implements CruUsuarioService {
 	public CruUsuario findByUsername(String username) {
 		try {
 			return repository.findByUsernameIgnoreCase(username);
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+	@Override
+	public CruUsuario findByEmail(String email) {
+		try {
+			return repository.findByEmail(email);
 		} catch (Exception e) {
 		}
 		return null;

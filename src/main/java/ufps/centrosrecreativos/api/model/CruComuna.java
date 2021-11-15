@@ -39,6 +39,16 @@ public class CruComuna implements Serializable {
 	public CruComuna() {
 	}
 
+	@PrePersist
+	private void prePersist(){
+		this.fechaRegistro = new Date();
+	}
+
+	@PreUpdate
+	private void preUpdate(){
+		this.fechaActualizacion = new Date();
+	}
+
 	public int getId() {
 		return id;
 	}

@@ -18,4 +18,14 @@ public class CrudComunaServiceImpl implements CruComunaService {
     public List<CruComuna> findAll() {
         return (List<CruComuna>) repository.findAll();
     }
+
+    @Override
+    public CruComuna findById(Integer id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    @Override
+    public CruComuna save(CruComuna entity) {
+        return repository.save(entity);
+    }
 }
