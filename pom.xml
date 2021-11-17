@@ -10,7 +10,7 @@
     </parent>
     <groupId>ufps.centros-recreativos.api</groupId>
     <artifactId>centros-recreativos-ufps-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <name>Centros Recreativos</name>
     <description>Centros Recreativos - API REST</description>
